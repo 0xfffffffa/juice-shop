@@ -37,7 +37,28 @@ describe('LoginGuard', () => {
   }))
 
   it('returns payload from decoding a valid JWT', inject([LoginGuard], (guard: LoginGuard) => {
-    localStorage.setItem('token', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c')
+The use of `localStorage` for potentially sensitive data like tokens is not secure. Instead, you should use HTTP-only cookies to store tokens.
+
+Cookies with the `HttpOnly` attribute can only be accessed through the HTTP protocol and not by client-side scripts. In this way, even if there is a successful XSS attack, these cookies can't be accessed, thus, the token is secure. However, JavaScript code doesn't provide direct functionality to set `HttpOnly` cookies. It's something that has to be done on the server-side.
+
+Here is an example of setting secure HTTP-only cookies on the server-side using Node.js with express:
+
+```JS
+const express = require('express')
+const cookieParser = require('cookie-parser')
+
+const app = express()
+app.use(cookieParser())
+
+app.get('/setToken', (req, res) => {
+  res.cookie('token', 'your.token.here', { httpOnly: true, secure: true })
+  res.send('Token set')
+})
+
+app.listen(3000)
+```
+
+In this code, Express.js is used to create a server and cookie-parser middleware is used to parse cookies. The '/setToken' route sets a cookie named 'token' with the value 'your.token.here'. The options `{ httpOnly: true, secure: true }` ensure that the cookie is not accessible through JavaScript and is only sent over HTTPS.
     expect(guard.tokenDecode()).toEqual({
       sub: '1234567890',
       name: 'John Doe',
