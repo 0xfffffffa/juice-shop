@@ -7,7 +7,12 @@ module.exports = function searchProducts () {
       res.status(400).send()
       return
     }
-    models.sequelize.query(`SELECT * FROM Products WHERE ((name LIKE '%${criteria}%' OR description LIKE '%${criteria}%') AND deletedAt IS NULL) ORDER BY name`)
+
+
+    models.sequelize.query(`SELECT * FROM Products WHERE ((name LIKE :searchName OR description LIKE :searchName) AND deletedAt IS NULL) ORDER BY name`,
+    { 
+      replacements: {searchName: `%${criteria}%`} 
+    })
       .then(([products]: any) => {
         const dataString = JSON.stringify(products)
         for (let i = 0; i < products.length; i++) {
