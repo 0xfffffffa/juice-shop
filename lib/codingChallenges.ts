@@ -73,7 +73,15 @@ function getCodingChallengeFromFileContent (source: string, challengeKey: string
   const vulnLines = []
   const neutralLines = []
   for (let i = 0; i < lines.length; i++) {
-    if (new RegExp(`vuln-code-snippet vuln-line.*${challengeKey}`).exec(lines[i]) != null) {
+The given code is vulnerable due to a potential regular expression (RegExp) denial of service (ReDoS) attack. In this attack, a malicious user could provide a `challengeKey` that results in a Regular Expression that can take an extremely long time to evaluate. This could effectively block other operations and could lead to a Denial of Service (DoS) attack.
+
+```javascript
+    let safeChallengeKey = challengeKey.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+    if (new RegExp(`vuln-code-snippet vuln-line.*${safeChallengeKey}`).exec(lines[i]) != null) {
+    
+    }
+```
+This code safely escapes any special characters in the `challengeKey` that could be used to manipulate the RegExp.
       vulnLines.push(i + 1)
     } else if (new RegExp(`vuln-code-snippet neutral-line.*${challengeKey}`).exec(lines[i]) != null) {
       neutralLines.push(i + 1)
