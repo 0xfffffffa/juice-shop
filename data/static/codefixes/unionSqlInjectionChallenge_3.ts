@@ -7,7 +7,7 @@ module.exports = function searchProducts () {
       res.status(400).send()
       return
     }
-Here is your fixed code:
+
 
     models.sequelize.query(`SELECT * FROM Products WHERE ((name LIKE :searchName OR description LIKE :searchName) AND deletedAt IS NULL) ORDER BY name`,
     { 
