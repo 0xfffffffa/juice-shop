@@ -102,7 +102,27 @@ const web3Wallet = require('./routes/web3Wallet')
 const updateProductReviews = require('./routes/updateProductReviews')
 const likeProductReviews = require('./routes/likeProductReviews')
 const security = require('./lib/insecurity')
-const app = express()
+const express = require('express');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
+const app = express();
+
+app.use(helmet());
+app.use(limiter);
+// default minimum security headers
+app.use(helmet.hidePoweredBy({ setTo: 'PHP 4.2.0' }));
+app.use(helmet.frameguard({ action: 'sameorigin' }));
+app.use(helmet.xssFilter());
+app.use(helmet.noSniff());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 const server = require('http').Server(app)
 const appConfiguration = require('./routes/appConfiguration')
 const captcha = require('./routes/captcha')
