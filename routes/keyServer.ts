@@ -11,7 +11,31 @@ module.exports = function serveKeyFiles () {
     const file = params.file
 
     if (!file.includes('/')) {
-      res.sendFile(path.resolve('encryptionkeys/', file))
+const express = require('express');
+const app = express();
+const path = require('path');
+
+app.get('/download/:file(*)', (req, res) => {
+  let file = req.params.file;
+  let fileLocation = path.join('./', 'encryptionkeys', file);
+  if (path.normalize(fileLocation).startsWith(path.join(__dirname, './encryptionkeys'))) {
+    res.sendFile(fileLocation);
+  } else {
+    res.status(403).end('Forbidden');
+  }
+});
+const app = express();
+const path = require('path');
+
+app.get('/download/:file(*)', (req, res) => {
+  let file = req.params.file;
+  let fileLocation = path.join('./', 'encryptionkeys', file);
+  if (path.normalize(fileLocation).startsWith(path.join(__dirname, './encryptionkeys'))) {
+    res.sendFile(fileLocation);
+  } else {
+    res.status(403).end('Forbidden');
+  }
+});
     } else {
       res.status(403)
       next(new Error('File names cannot contain forward slashes!'))
