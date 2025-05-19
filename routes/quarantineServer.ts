@@ -11,7 +11,14 @@ module.exports = function serveQuarantineFiles () {
     const file = params.file
 
     if (!file.includes('/')) {
-      res.sendFile(path.resolve('ftp/quarantine/', file))
+const securePath = require('path');
+
+let filePath = securePath.join(__dirname, 'ftp', 'quarantine', file);
+if (securePath.normalize(filePath).startsWith(securePath.join(__dirname, 'ftp', 'quarantine'))) {
+    res.sendFile(filePath);
+} else {
+    res.status(403).send('Forbidden');
+}
     } else {
       res.status(403)
       next(new Error('File names cannot contain forward slashes!'))
